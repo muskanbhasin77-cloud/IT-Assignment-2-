@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer Organization & Architecture Master Suite - Muskan Bhasin (1826055)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+        }
+
+        .highlight-focus {
+            ring: 3px solid #2563eb;
+            transform: scale(1.01);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dim-card {
+            opacity: 0.35;
+            filter: grayscale(80%);
+            transition: all 0.3s ease;
+        }
+
+        .pulse-bus {
+            stroke-dasharray: 6, 6;
+            animation: busFlow 1.5s linear infinite;
+        }
+
+        @keyframes busFlow {
+            to { stroke-dashoffset: -24; }
+        }
+
+        .stall-pulse {
+            animation: stallWarning 1.2s ease-in-out infinite alternate;
+        }
+
+        @keyframes stallWarning {
+            from { fill: #ef4444; opacity: 0.5; }
+            to { fill: #dc2626; opacity: 1; }
+        }
+
+        /* Tab Visibility Control */
+        .tab-panel {
+            display: none;
+        }
+        .tab-panel.active-panel {
+            display: block;
+        }
+
+        /* Active Tab Button Styling */
+        .tab-btn.active-tab {
+            background-color: #2563eb !important;
+            color: #ffffff !important;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Print formatting */
+        @media print {
+            body { background: white !important; color: black !important; }
+            .no-print { display: none !important; }
+            .tab-panel { display: block !important; page-break-after: always; }
+            .shadow-xl, .shadow-lg, .shadow-md { box-shadow: none !important; }
+            .border { border-color: #cbd5e1 !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen pb-16 selection:bg-blue-200">
+
+    <!-- STICKY TOP HEADER / ACADEMIC BANNER -->
+    <header class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white border-b border-indigo-900 shadow-xl sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+                
+                <!-- Title & Course Badge -->
+                <div class="flex items-center gap-3 text-center sm:text-left">
+                    <div class="p-2 bg-blue-600/30 border border-blue-400/40 rounded-xl hidden sm:block">
+                        <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[11px] font-semibold tracking-wide uppercase border border-blue-400/30">
+                            Computer Organization & Architecture — Questions 1 to 8
+                        </div>
+                        <h1 class="text-lg sm:text-xl font-black tracking-tight text-white mt-0.5">
+                            Interactive Architecture Infographic Suite
+                        </h1>
+                    </div>
+                </div>
+
+                <!-- Student Attribution & Roll Badge -->
+                <div class="flex items-center gap-3">
+                    <div class="bg-slate-800/90 border border-slate-700/90 rounded-xl px-3.5 py-1.5 flex items-center gap-3 shadow-inner">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-400 to-amber-200 text-slate-900 font-black text-xs flex items-center justify-center shadow">
+                            MB
+                        </div>
+                        <div class="text-left">
+                            <p class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Student Attribution</p>
+                            <p class="text-xs font-bold text-amber-300 tracking-tight">Muskan Bhasin <span class="text-slate-400 font-normal">| Roll No.:</span> <span class="text-white font-mono font-bold">1826055</span></p>
+                        </div>
+                    </div>
+
+                    <button onclick="window.print()" class="no-print bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shadow hover:shadow-blue-500/30" title="Print or Save PDF">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 000-4h-6a2 2 0 000 4zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                        </svg>
+                        <span class="hidden md:inline">Print / Save PDF</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- STICKY TOP TAB NAVIGATION BAR -->
+        <nav class="bg-slate-950 border-t border-slate-800 no-print overflow-x-auto scrollbar-none">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between gap-1.5 text-xs font-semibold">
+                
+                <div class="flex items-center gap-1.5 min-w-max">
+                    <button onclick="switchTab(1)" id="tab-btn-1" class="tab-btn active-tab px-3 py-1.5 rounded-xl bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800 transition">
+                        Q1: CPU & Memory
+                    </button>
+                    <button onclick="switchTab(2)" id="tab-btn-2" class="tab-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800 transition">
+                        Q2: Instruction Cycle
+                    </button>
+                    <button onclick="switchTab(3)" id="tab-btn-3" class="tab-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800 transition">
+                        Q3: Disk & Tape (Univ)
+                    </button>
+                    <button onclick="switchTab(4)" id="tab-btn-4" class="tab-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800 transition">
+                        Q4: Sequential vs Direct
+                    </button>
+                    <button onclick="switchTab(5)" id="tab-btn-5" class="tab-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800 transition">
+                        Q5: RAM vs ROM
+                    </button>
+                    <button onclick="switchTab(6)" id="tab-btn-6" class="tab-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800 transition">
+                        Q6: Long-Term Archiving
+                    </button>
+                    <button onclick="switchTab(7)" id="tab-btn-7" class="tab-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800 transition">
+                        Q7: Clock Speed Critique
+                    </button>
+                    <button onclick="switchTab(8)" id="tab-btn-8" class="tab-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800 transition">
+                        Q8: 60-Student Lab Design
+                    </button>
+                </div>
+
+                <div class="hidden lg:flex items-center gap-2 text-[10px] font-mono text-slate-400 pl-4 border-l border-slate-800">
+                    <span>Keys:</span>
+                    <kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700 text-white font-bold">1-8</kbd>
+                    <span>or</span>
+                    <kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700 text-white font-bold">← / →</kbd>
+                </div>
+
+            </div>
+        </nav>
+    </header>
+
+    <!-- MAIN PANELS CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+
+        <!-- ========================================== -->
+        <!-- TAB 1: QUESTION 1 — CPU & MAIN MEMORY -->
+        <!-- ========================================== -->
+        <div id="panel-tab-1" class="tab-panel active-panel space-y-8">
+            <section class="glass-card rounded-2xl p-6 shadow-sm border border-slate-200">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2 text-xs font-bold text-blue-600 uppercase tracking-widest">
+                            <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span> Question 1 Analysis
+                        </div>
+                        <h2 class="text-2xl font-black text-slate-900 tracking-tight">CPU Functional Components & Main Memory Architecture</h2>
+                        <p class="text-xs text-slate-600">Overview of the Control Unit (CU), Arithmetic Logic Unit (ALU), CPU Registers, and Main Memory Hierarchy (RAM, ROM, Cache, Registers).</p>
+                    </div>
+                    <div class="p-3 bg-slate-900 text-slate-200 rounded-xl text-xs font-mono border border-slate-800 max-w-md">
+                        <span class="text-amber-400 font-bold font-sans block mb-1">Student Badge: Muskan Bhasin (Roll No.: 1826055)</span>
+                        <em class="text-slate-300 font-sans">"State 3 main functional components of CPU and 4 types of main memory with one key characteristic of each."</em>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3 CPU COMPONENTS CARDS -->
+            <section class="space-y-4">
+                <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <span class="w-7 h-7 rounded-lg bg-blue-600 text-white font-extrabold flex items-center justify-center text-xs">1.1</span>
+                    The 3 Main Functional Components of CPU
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div class="glass-card p-5 rounded-2xl border-t-4 border-t-blue-600 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-black uppercase">Control Unit (CU)</span>
+                            <span class="text-[10px] font-mono text-slate-400">System Conductor</span>
+                        </div>
+                        <h4 class="text-base font-bold text-slate-900">1. Control Unit (CU)</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">Directs all operations inside the CPU by fetching instructions from main memory, decoding them into micro-operations, and issuing timing signals to control data movement between components.</p>
+                        <div class="p-2.5 bg-blue-50 rounded-xl text-[11px] text-blue-950 font-semibold border border-blue-200">
+                            🔑 <strong>Key Characteristic:</strong> Manages instruction execution flow and data routing without executing arithmetic or storing data.
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl border-t-4 border-t-emerald-600 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase">Arithmetic Logic Unit</span>
+                            <span class="text-[10px] font-mono text-slate-400">Computation Engine</span>
+                        </div>
+                        <h4 class="text-base font-bold text-slate-900">2. Arithmetic Logic Unit (ALU)</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">Performs fundamental mathematical operations (addition, subtraction, multiplication) and logical comparisons (AND, OR, NOT, greater-than, less-than) on data operands.</p>
+                        <div class="p-2.5 bg-emerald-50 rounded-xl text-[11px] text-emerald-950 font-semibold border border-emerald-200">
+                            🔑 <strong>Key Characteristic:</strong> Performs actual data manipulations and logical evaluation required by CPU instructions.
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl border-t-4 border-t-amber-500 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-black uppercase">Registers</span>
+                            <span class="text-[10px] font-mono text-slate-400">On-Chip Storage</span>
+                        </div>
+                        <h4 class="text-base font-bold text-slate-900">3. CPU Registers</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">High-speed internal storage locations inside the processor used to hold temporary operands, immediate instruction addresses, and intermediate computation results.</p>
+                        <div class="p-2.5 bg-amber-50 rounded-xl text-[11px] text-amber-950 font-semibold border border-amber-200">
+                            🔑 <strong>Key Characteristic:</strong> Provides sub-nanosecond single-cycle access speed directly accessible by the ALU and CU.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4 TYPES OF MAIN MEMORY -->
+            <section class="space-y-4">
+                <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <span class="w-7 h-7 rounded-lg bg-indigo-600 text-white font-extrabold flex items-center justify-center text-xs">1.2</span>
+                    The 4 Primary Types of Memory & Key Characteristics
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="glass-card p-4 rounded-xl border border-slate-200 space-y-2">
+                        <span class="text-[10px] font-black uppercase text-blue-700 bg-blue-100 px-2 py-0.5 rounded">1. RAM (Random Access Memory)</span>
+                        <h5 class="text-sm font-bold text-slate-900">Primary Volatile Workspace</h5>
+                        <p class="text-xs text-slate-600 leading-relaxed">Temporary storage holding active operating system code, loaded user software, and dynamic runtime data.</p>
+                        <div class="p-2 bg-blue-50 border border-blue-200 rounded text-[11px] font-bold text-blue-900">
+                            🔑 Key Characteristic: Volatile (data lost instantly when power is turned off).
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-4 rounded-xl border border-slate-200 space-y-2">
+                        <span class="text-[10px] font-black uppercase text-amber-800 bg-amber-100 px-2 py-0.5 rounded">2. ROM (Read-Only Memory)</span>
+                        <h5 class="text-sm font-bold text-slate-900">Permanent Firmware Storage</h5>
+                        <p class="text-xs text-slate-600 leading-relaxed">Non-volatile memory holding system boot instructions (BIOS/UEFI) and low-level hardware microcode.</p>
+                        <div class="p-2 bg-amber-50 border border-amber-200 rounded text-[11px] font-bold text-amber-900">
+                            🔑 Key Characteristic: Non-volatile (retains data permanently without power).
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-4 rounded-xl border border-slate-200 space-y-2">
+                        <span class="text-[10px] font-black uppercase text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">3. Cache Memory (L1/L2/L3)</span>
+                        <h5 class="text-sm font-bold text-slate-900">High-Speed Buffer</h5>
+                        <p class="text-xs text-slate-600 leading-relaxed">Small, ultra-fast SRAM buffer sitting between CPU and RAM to store frequently accessed data.</p>
+                        <div class="p-2 bg-emerald-50 border border-emerald-200 rounded text-[11px] font-bold text-emerald-900">
+                            🔑 Key Characteristic: Extremely low access latency (1–10 ns) bridging speed gap.
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-4 rounded-xl border border-slate-200 space-y-2">
+                        <span class="text-[10px] font-black uppercase text-purple-800 bg-purple-100 px-2 py-0.5 rounded">4. CPU Registers</span>
+                        <h5 class="text-sm font-bold text-slate-900">On-Core Fast Storage</h5>
+                        <p class="text-xs text-slate-600 leading-relaxed">Dedicated internal cells inside the CPU execution core (PC, IR, MAR, MDR, ACC).</p>
+                        <div class="p-2 bg-purple-50 border border-purple-200 rounded text-[11px] font-bold text-purple-900">
+                            🔑 Key Characteristic: Fastest storage tier in architecture (0.2–0.5 ns).
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: QUESTION 2 — FETCH-DECODE-EXECUTE -->
+        <!-- ========================================== -->
+        <div id="panel-tab-2" class="tab-panel space-y-8">
+            <section class="glass-card rounded-2xl p-6 shadow-sm border border-slate-200">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 text-xs font-bold text-indigo-600 uppercase tracking-widest mb-1">
+                            <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span> Question 2 Simulator
+                        </div>
+                        <h2 class="text-2xl font-black text-slate-900 tracking-tight">Fetch–Decode–Execute Cycle & Register Interaction</h2>
+                        <p class="text-xs text-slate-600">Step-by-step interactive demonstration of PC, MAR, MDR, IR, and Accumulator registers during instruction processing.</p>
+                    </div>
+                    <div class="no-print flex items-center gap-2 bg-slate-900 p-2 rounded-xl text-white">
+                        <button onclick="tab2StepCycle()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">Step Cycle ▶</button>
+                        <button onclick="tab2ToggleAuto()" id="tab2-btn-auto" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">Auto-Play ⟳</button>
+                        <button onclick="tab2ResetCycle()" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">Reset</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SIMULATOR DISPLAY BOARD -->
+            <div class="bg-slate-950 rounded-2xl p-6 text-white border border-slate-800 space-y-6">
+                <!-- Status & Step Callout -->
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <div class="flex items-center gap-3">
+                        <span id="tab2-phase-badge" class="px-3 py-1 rounded-full bg-amber-500 text-slate-950 font-black text-xs uppercase tracking-wider">
+                            FETCH PHASE
+                        </span>
+                        <span id="tab2-phase-text" class="text-xs font-mono text-amber-300 font-bold">Step 1: PC Address Copy to MAR</span>
+                    </div>
+                    <div class="text-xs font-mono text-slate-400">
+                        Instruction Pointer: <span id="tab2-pc-val" class="text-sky-400 font-bold">0x00</span>
+                    </div>
+                </div>
+
+                <!-- Explanation Banner -->
+                <div class="bg-slate-900/80 p-4 rounded-xl border border-indigo-500/30">
+                    <h4 id="tab2-step-title" class="text-sm font-bold text-indigo-300 mb-1">1. Fetch Step A: Copy Address to MAR</h4>
+                    <p id="tab2-step-desc" class="text-xs text-slate-300 leading-relaxed font-sans">
+                        The Control Unit copies the current instruction address from Program Counter (PC=0x00) into Memory Address Register (MAR) over the internal address bus.
+                    </p>
+                </div>
+
+                <!-- REGISTER & RAM VISUAL GRID -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                    <!-- CPU Registers (7 Cols) -->
+                    <div class="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs font-mono">
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 space-y-1">
+                            <span class="text-[10px] text-slate-400 font-bold">Program Counter (PC)</span>
+                            <div id="tab2-reg-pc" class="text-base font-bold text-sky-400">0x00</div>
+                            <span class="text-[9px] text-slate-500 block">Holds next instruction addr</span>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 space-y-1">
+                            <span class="text-[10px] text-slate-400 font-bold">Mem Addr Reg (MAR)</span>
+                            <div id="tab2-reg-mar" class="text-base font-bold text-amber-400">0x00</div>
+                            <span class="text-[9px] text-slate-500 block">Holds active bus address</span>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 space-y-1">
+                            <span class="text-[10px] text-slate-400 font-bold">Mem Data Reg (MDR)</span>
+                            <div id="tab2-reg-mdr" class="text-base font-bold text-emerald-400">0x0000</div>
+                            <span class="text-[9px] text-slate-500 block">Buffers read/write data</span>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 space-y-1">
+                            <span class="text-[10px] text-slate-400 font-bold">Instruction Reg (IR)</span>
+                            <div id="tab2-reg-ir" class="text-base font-bold text-purple-400">---</div>
+                            <span class="text-[9px] text-slate-500 block">Holds fetched opcode</span>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 space-y-1">
+                            <span class="text-[10px] text-slate-400 font-bold">Accumulator (ACC)</span>
+                            <div id="tab2-reg-acc" class="text-base font-bold text-red-400">0</div>
+                            <span class="text-[9px] text-slate-500 block">ALU calculation result</span>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 space-y-1">
+                            <span class="text-[10px] text-slate-400 font-bold">Control Unit State</span>
+                            <div id="tab2-reg-cu" class="text-xs font-bold text-amber-300">FETCHING</div>
+                            <span class="text-[9px] text-slate-500 block">Generates timing bus</span>
+                        </div>
+                    </div>
+
+                    <!-- RAM Contents (5 Cols) -->
+                    <div class="lg:col-span-5 bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block font-mono">Main RAM State (Address : Content)</span>
+                        <div id="tab2-ram-list" class="space-y-1 text-xs font-mono">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 3: QUESTION 3 — DISK & TAPE IN UNIV -->
+        <!-- ========================================== -->
+        <div id="panel-tab-3" class="tab-panel space-y-8">
+            <section class="glass-card rounded-2xl p-6 shadow-sm border border-slate-200">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 text-xs font-bold text-teal-600 uppercase tracking-widest mb-1">
+                            <span class="w-2.5 h-2.5 rounded-full bg-teal-600"></span> Question 3 Evaluation
+                        </div>
+                        <h2 class="text-2xl font-black text-slate-900 tracking-tight">University Computer Centre: Magnetic Disks vs. Magnetic Tape</h2>
+                        <p class="text-xs text-slate-600">Evaluating direct-access HDDs for live student records versus offline LTO magnetic tape for periodic backups.</p>
+                    </div>
+                    <div class="p-3 bg-slate-900 text-slate-200 rounded-xl text-xs font-mono border border-slate-800 max-w-md">
+                        <span class="text-amber-400 font-bold font-sans block mb-1">Student Badge: Muskan Bhasin (Roll No.: 1826055)</span>
+                        <em class="text-slate-300 font-sans">"Justify deploying magnetic disks for live student database queries and magnetic tape for periodic university archives."</em>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DUAL STORAGE SCENARIO SIMULATOR -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- HDD Live Queries -->
+                <div class="glass-card p-6 rounded-2xl border-t-4 border-t-blue-600 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 text-xs font-bold uppercase">Live Production Storage</span>
+                        <span class="text-xs font-mono text-blue-700 font-bold">Direct Access (HDDs)</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">Magnetic Disk Array (RAID HDDs)</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Houses active student databases, attendance portals, and course registration systems requiring instant random access (4–10 milliseconds) for thousands of concurrent queries.
+                    </p>
+                    <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-950 font-semibold space-y-1">
+                        <div>✔ Direct Random Access (Head moves to track/sector)</div>
+                        <div>✔ High IOPS for multi-user database concurrency</div>
+                        <div>✖ Higher cost per GB and continuous power consumption</div>
+                    </div>
+                </div>
+
+                <!-- Tape Archives -->
+                <div class="glass-card p-6 rounded-2xl border-t-4 border-t-emerald-600 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase">Periodic Backup Storage</span>
+                        <span class="text-xs font-mono text-emerald-700 font-bold">Sequential Access (LTO Tape)</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">Automated Magnetic Tape Vault</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Receives nightly database snapshots and semester-end transcript dumps. Cartridges sit offline on shelves, providing 30+ year air-gapped ransomware protection.
+                    </p>
+                    <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-950 font-semibold space-y-1">
+                        <div>✔ Ultra-low cost (~$0.005/GB) & $0 W shelf power</div>
+                        <div>✔ Offline physical air-gap (Ransomware Proof)</div>
+                        <div>✖ Sequential access latency (1–3 min seek)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 4: QUESTION 4 — SEQUENTIAL VS DIRECT -->
+        <!-- ========================================== -->
+        <div id="panel-tab-4" class="tab-panel space-y-8">
+            <section class="glass-card rounded-2xl p-6 shadow-sm border border-slate-200">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 text-xs font-bold text-purple-600 uppercase tracking-widest mb-1">
+                            <span class="w-2.5 h-2.5 rounded-full bg-purple-600"></span> Question 4 Analysis
+                        </div>
+                        <h2 class="text-2xl font-black text-slate-900 tracking-tight">Sequential Access vs. Direct Access Devices</h2>
+                        <p class="text-xs text-slate-600">Contrasting linear ribbon spooling (Magnetic Tape) with direct sector addressing (Disks & Optical Media).</p>
+                    </div>
+                    <div class="p-3 bg-slate-900 text-slate-200 rounded-xl text-xs font-mono border border-slate-800 max-w-md">
+                        <span class="text-amber-400 font-bold font-sans block mb-1">Student Badge: Muskan Bhasin (Roll No.: 1826055)</span>
+                        <em class="text-slate-300 font-sans">"Distinguish sequential access devices from direct access devices in terms of retrieval method, access time, applications and cost."</em>
+                    </div>
+                </div>
+            </section>
+
+            <!-- COMPARISON MATRIX TABLE -->
+            <div class="glass-card rounded-2xl p-6 shadow-sm overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="bg-slate-900 text-white border-b border-slate-800 font-mono">
+                            <th class="p-3.5 uppercase">Parameter</th>
+                            <th class="p-3.5 uppercase text-emerald-400">Sequential Access (e.g., Magnetic Tape)</th>
+                            <th class="p-3.5 uppercase text-blue-400">Direct Access (e.g., Magnetic Disk / Optical)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 text-slate-700">
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3.5 font-bold text-slate-900">Data Retrieval Method</td>
+                            <td class="p-3.5">Linear record-by-record traversal from start of ribbon ($R_1 \rightarrow R_2 \rightarrow \dots \rightarrow R_N$).</td>
+                            <td class="p-3.5 font-bold text-blue-700">Direct block/sector addressing via read/write head movement.</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3.5 font-bold text-slate-900">Access Time Variance</td>
+                            <td class="p-3.5 text-amber-700 font-semibold">Variable & Position-dependent (seconds to minutes).</td>
+                            <td class="p-3.5 text-blue-700 font-bold">Nearly Uniform & Fast (milliseconds: Seek + Rotational Latency).</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3.5 font-bold text-slate-900">Typical Applications</td>
+                            <td class="p-3.5">Bulk batch processing, cold archives, disaster recovery dumps.</td>
+                            <td class="p-3.5">Online transaction processing (OLTP), active OS partitions, web servers.</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3.5 font-bold text-slate-900">Cost per GB Storage</td>
+                            <td class="p-3.5 font-bold text-emerald-700">Extremely Low (~$0.005 / GB)</td>
+                            <td class="p-3.5">Moderate to High (~$0.018 / GB for HDD; higher for SSD).</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 5: QUESTION 5 — RAM VS ROM -->
+        <!-- ========================================== -->
+        <div id="panel-tab-5" class="tab-panel space-y-8">
+            <section class="glass-card rounded-2xl p-6 shadow-sm border border-slate-200">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 text-xs font-bold text-sky-600 uppercase tracking-widest mb-1">
+                            <span class="w-2.5 h-2.5 rounded-full bg-sky-600"></span> Question 5 Architecture
+                        </div>
+                        <h2 class="text-2xl font-black text-slate-900 tracking-tight">RAM (SRAM, DRAM) vs. ROM (PROM, EPROM, EEPROM)</h2>
+                        <p class="text-xs text-slate-600">Comparing silicon cell structures, volatility, speed, cost, and roles during boot-up vs execution.</p>
+                    </div>
+                    <div class="p-3 bg-slate-900 text-slate-200 rounded-xl text-xs font-mono border border-slate-800 max-w-md">
+                        <span class="text-amber-400 font-bold font-sans block mb-1">Student Badge: Muskan Bhasin (Roll No.: 1826055)</span>
+                        <em class="text-slate-300 font-sans">"Compare RAM (SRAM/DRAM) with ROM (PROM/EPROM/EEPROM) in terms of volatility, speed, cost, read/write, and system roles."</em>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5 MEMORY TYPE CARDS -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="glass-card p-4 rounded-xl border-t-4 border-t-sky-500 space-y-2">
+                    <span class="text-[10px] font-black uppercase text-sky-800 bg-sky-100 px-2 py-0.5 rounded">SRAM (Static RAM)</span>
+                    <h5 class="text-sm font-bold text-slate-900">6T Flip-Flop</h5>
+                    <p class="text-xs text-slate-600">Ultra-fast (0.5–2.5 ns), zero refresh required. Used for CPU Cache (L1/L2/L3). High cost/bit.</p>
+                </div>
+
+                <div class="glass-card p-4 rounded-xl border-t-4 border-t-blue-600 space-y-2">
+                    <span class="text-[10px] font-black uppercase text-blue-800 bg-blue-100 px-2 py-0.5 rounded">DRAM (Dynamic RAM)</span>
+                    <h5 class="text-sm font-bold text-slate-900">1T-1C Cell</h5>
+                    <p class="text-xs text-slate-600">High density, requires periodic refresh every 64ms. Used for Main System Memory. Moderate cost.</p>
+                </div>
+
+                <div class="glass-card p-4 rounded-xl border-t-4 border-t-orange-500 space-y-2">
+                    <span class="text-[10px] font-black uppercase text-orange-800 bg-orange-100 px-2 py-0.5 rounded">PROM</span>
+                    <h5 class="text-sm font-bold text-slate-900">Fusible Links</h5>
+                    <p class="text-xs text-slate-600">One-Time Programmable (OTP). Fuses physically blown using high voltage programmer. Irreversible.</p>
+                </div>
+
+                <div class="glass-card p-4 rounded-xl border-t-4 border-t-amber-500 space-y-2">
+                    <span class="text-[10px] font-black uppercase text-amber-800 bg-amber-100 px-2 py-0.5 rounded">EPROM</span>
+                    <h5 class="text-sm font-bold text-slate-900">UV Glass Window</h5>
+                    <p class="text-xs text-slate-600">Erasable using intense UV-C light through quartz window for 20 mins. Entire chip erased.</p>
+                </div>
+
+                <div class="glass-card p-4 rounded-xl border-t-4 border-t-emerald-600 space-y-2">
+                    <span class="text-[10px] font-black uppercase text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">EEPROM / Flash</span>
+                    <h5 class="text-sm font-bold text-slate-900">Electrical Tunneling</h5>
+                    <p class="text-xs text-slate-600">Electrically erased and rewritten byte-by-byte or block-by-block in-circuit. Modern BIOS/UEFI.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 6: QUESTION 6 — LONG-TERM ARCHIVING -->
+        <!-- ========================================== -->
+        <div id="panel-tab-6" class="tab-panel space-y-8">
+            <section class="glass-card rounded-2xl p-6 shadow-sm border border-slate-200">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 text-xs font-bold text-emerald-600 uppercase tracking-widest mb-1">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span> Question 6 Assessment
+                        </div>
+                        <h2 class="text-2xl font-black text-slate-900 tracking-tight">Institutional Long-Term Archiving Assessment</h2>
+                        <p class="text-xs text-slate-600">Assessing Tape Libraries vs RAID HDD Arrays vs Optical Discs for 20+ year record retention.</p>
+                    </div>
+                    <div class="p-3 bg-slate-900 text-slate-200 rounded-xl text-xs font-mono border border-slate-800 max-w-md">
+                        <span class="text-amber-400 font-bold font-sans block mb-1">Student Verdict: Muskan Bhasin (Roll No.: 1826055)</span>
+                        <strong class="text-emerald-400 font-sans">Magnetic Tape Library (LTO) is the Most Suitable Medium</strong>
+                    </div>
+                </div>
+            </section>
+
+            <!-- EXECUTIVE VERDICT SUMMARY -->
+            <div class="glass-card rounded-2xl p-6 border-l-8 border-l-emerald-600 bg-gradient-to-r from-emerald-50/50 via-white to-white space-y-3">
+                <h3 class="text-xl font-black text-slate-900">Why Magnetic Tape Libraries (LTO) Win for Institutional Archiving</h3>
+                <ul class="text-xs text-slate-700 leading-relaxed space-y-2 list-disc pl-4 font-medium">
+                    <li><strong>85% TCO Savings:</strong> Media cost (~$0.005/GB) and near-zero power/cooling consumption on cold storage shelves reduce 20-year operational expenditure massively compared to spinning RAID arrays.</li>
+                    <li><strong>Air-Gapped Ransomware Immunity:</strong> Offline cartridges on vault shelves are physically disconnected from network cyberattacks.</li>
+                    <li><strong>30+ Year Longevity:</strong> Barium Ferrite cartridges survive 30+ years in climate vaults without drive motor failure or bit rot ($10^{-19}$ BER).</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 7: QUESTION 7 — CLOCK SPEED CRITIQUE -->
+        <!-- ========================================== -->
+        <div id="panel-tab-7" class="tab-panel space-y-8">
+            <section class="glass-card rounded-2xl p-6 shadow-sm border border-slate-200">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 text-xs font-bold text-sky-600 uppercase tracking-widest mb-1">
+                            <span class="w-2.5 h-2.5 rounded-full bg-sky-600"></span> Question 7 Critique
+                        </div>
+                        <h2 class="text-2xl font-black text-slate-900 tracking-tight">Critique of Increasing Clock Speed Alone</h2>
+                        <p class="text-xs text-slate-600">Analyzing why clock frequency alone fails without Cache, Word Length, Core Count, and Main RAM balance.</p>
+                    </div>
+                    <div class="p-3 bg-slate-900 text-slate-200 rounded-xl text-xs font-mono border border-slate-800 max-w-md">
+                        <span class="text-amber-400 font-bold font-sans block mb-1">Student Critique: Muskan Bhasin (Roll No.: 1826055)</span>
+                        <em class="text-slate-300 font-sans">"CPU Time = Instructions × CPI × Clock Cycle Time. Raw GHz alone causes severe thermal and memory stalls."</em>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4 ARCHITECTURAL FACTORS GRID -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div class="glass-card p-5 rounded-2xl border-t-4 border-t-emerald-600 space-y-2">
+                    <span class="text-[10px] font-black uppercase text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">1. Cache Memory</span>
+                    <h4 class="text-base font-bold text-slate-900">Memory Wall Bridge</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">High clock speed stalls for 300+ cycles during RAM fetches. Large L2/L3 cache achieves 95%+ hit rates, keeping CPU busy.</p>
+                </div>
+
+                <div class="glass-card p-5 rounded-2xl border-t-4 border-t-purple-600 space-y-2">
+                    <span class="text-[10px] font-black uppercase text-purple-800 bg-purple-100 px-2 py-0.5 rounded">2. Word Length</span>
+                    <h4 class="text-base font-bold text-slate-900">32-Bit vs 64-Bit Width</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">64-bit registers process 8 bytes per cycle and address exabytes of RAM, whereas 32-bit is capped strictly at 4 GB RAM.</p>
+                </div>
+
+                <div class="glass-card p-5 rounded-2xl border-t-4 border-t-amber-500 space-y-2">
+                    <span class="text-[10px] font-black uppercase text-amber-800 bg-amber-100 px-2 py-0.5 rounded">3. Core Count</span>
+                    <h4 class="text-base font-bold text-slate-900">Thermal & Amdahl's Law</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">Power grows cubically ($P \propto f \cdot V^2$). Multi-core parallel execution delivers higher aggregate throughput at cool frequencies.</p>
+                </div>
+
+                <div class="glass-card p-5 rounded-2xl border-t-4 border-t-blue-600 space-y-2">
+                    <span class="text-[10px] font-black uppercase text-blue-800 bg-blue-100 px-2 py-0.5 rounded">4. RAM Capacity</span>
+                    <h4 class="text-base font-bold text-slate-900">Disk Thrashing Cliff</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">Insufficient RAM forces virtual memory page swapping to disk (100,000x slower), reducing a 5 GHz CPU to effective kilohertz crawl.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 8: QUESTION 8 — 60-STUDENT LAB DESIGN -->
+        <!-- ========================================== -->
+        <div id="panel-tab-8" class="tab-panel space-y-8">
+            <section class="glass-card rounded-2xl p-6 shadow-sm border border-slate-200">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 text-xs font-bold text-teal-600 uppercase tracking-widest mb-1">
+                            <span class="w-2.5 h-2.5 rounded-full bg-teal-600"></span> Question 8 Proposal
+                        </div>
+                        <h2 class="text-2xl font-black text-slate-900 tracking-tight">Balanced Computer Lab Design for 60 College Students</h2>
+                        <p class="text-xs text-slate-600">Optimized hardware specification: 6-Core iGPU CPU, 16GB RAM, 512GB NVMe, and 24TB RAID-6 NAS.</p>
+                    </div>
+                    <div class="p-3 bg-slate-900 text-slate-200 rounded-xl text-xs font-mono border border-slate-800 max-w-md">
+                        <span class="text-amber-400 font-bold font-sans block mb-1">Designer: Muskan Bhasin (Roll No.: 1826055)</span>
+                        <strong class="text-teal-300 font-sans">Budget Target: ~$495 / Seat ($29,680 Total Lab Investment)</strong>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BOM SUMMARY TABLE -->
+            <div class="glass-card rounded-2xl p-6 shadow-sm overflow-x-auto">
+                <h3 class="text-base font-bold text-slate-900 mb-3">Itemized Bill of Materials (60 Student Workstations + Central Storage)</h3>
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="bg-slate-900 text-white border-b border-slate-800 font-mono">
+                            <th class="p-3 uppercase">Subsystem</th>
+                            <th class="p-3 uppercase text-teal-400">Proposed Hardware Specification</th>
+                            <th class="p-3 uppercase text-amber-400">Unit Cost</th>
+                            <th class="p-3 uppercase text-blue-400">Total Cost (60 PCs)</th>
+                            <th class="p-3 uppercase text-emerald-400">Architectural Justification</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 text-slate-700">
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 font-bold text-slate-900">CPU / iGPU</td>
+                            <td class="p-3 font-mono">AMD Ryzen 5 5600G (6C/12T, iGPU, 65W)</td>
+                            <td class="p-3 font-mono">$130</td>
+                            <td class="p-3 font-mono font-bold">$7,800</td>
+                            <td class="p-3">Integrated iGPU saves $200/seat on discrete GPUs; 65W TDP keeps AC costs low.</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 font-bold text-slate-900">Main Memory</td>
+                            <td class="p-3 font-mono">16 GB DDR4 Dual-Channel (2x 8GB 3200MHz)</td>
+                            <td class="p-3 font-mono">$38</td>
+                            <td class="p-3 font-mono font-bold">$2,280</td>
+                            <td class="p-3">Dual-channel doubles bus width (~50 GB/s) for iGPU; handles IDEs + browser + compiler.</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 font-bold text-slate-900">Local SSD</td>
+                            <td class="p-3 font-mono">512 GB M.2 PCIe 4.0 NVMe SSD (3,500 MB/s)</td>
+                            <td class="p-3 font-mono">$40</td>
+                            <td class="p-3 font-mono font-bold">$2,400</td>
+                            <td class="p-3">8-second OS boot during 60-student class start; local scratch space for toolchains.</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 font-bold text-slate-900">Base System</td>
+                            <td class="p-3 font-mono">B550M Mobo + 450W PSU + Case + 24" IPS + Peripherals</td>
+                            <td class="p-3 font-mono">$235</td>
+                            <td class="p-3 font-mono font-bold">$14,100</td>
+                            <td class="p-3">Ergonomic displays and reliable power delivery for multi-year college lifespan.</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50 bg-emerald-50/50">
+                            <td class="p-3 font-bold text-slate-900">Central NAS</td>
+                            <td class="p-3 font-mono">24 TB RAID-6 Storage Server + 10GbE NIC</td>
+                            <td class="p-3 font-mono" colspan="2">$2,200 (Single NAS)</td>
+                            <td class="p-3">Centralized LDAP roaming profiles, dual disk parity, 3-2-1 backup strategy.</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50 bg-purple-50/50">
+                            <td class="p-3 font-bold text-slate-900">Switch & Net</td>
+                            <td class="p-3 font-mono">48-Port Managed Switch + 10GbE Uplink</td>
+                            <td class="p-3 font-mono" colspan="2">$900 (Net Infrastructure)</td>
+                            <td class="p-3">Prevents network bottlenecks during simultaneous PXE booting and home directory syncs.</td>
+                        </tr>
+                        <tr class="bg-slate-900 text-white font-bold font-mono">
+                            <td class="p-3" colspan="3">GRAND TOTAL (60 WORKSTATIONS + NAS + SWITCH)</td>
+                            <td class="p-3 text-teal-300 text-sm">$29,680</td>
+                            <td class="p-3 text-amber-300 font-sans text-xs">AVG COST: ~$494.66 PER SEAT</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 text-center text-xs text-slate-500 border-t border-slate-200 pt-6">
+        <p class="font-bold text-slate-800">Computer Organization & Architecture Master Infographic Suite</p>
+        <p class="mt-1">Prepared by student <strong class="text-slate-900">Muskan Bhasin</strong> • Roll No.: <strong class="text-slate-900">1826055</strong></p>
+    </footer>
+
+    <!-- INTERACTIVE MASTER SUITE JAVASCRIPT ENGINE -->
+    <script>
+        // Tab Navigation & Keyboard Shortcuts
+        let currentTab = 1;
+
+        function switchTab(tabNum) {
+            if (tabNum < 1 || tabNum > 8) return;
+            currentTab = tabNum;
+
+            // Update Panel Visibility
+            for (let i = 1; i <= 8; i++) {
+                const panel = document.getElementById(`panel-tab-${i}`);
+                const btn = document.getElementById(`tab-btn-${i}`);
+                if (i === tabNum) {
+                    panel.classList.add('active-panel');
+                    btn.classList.add('active-tab');
+                } else {
+                    panel.classList.remove('active-panel');
+                    btn.classList.remove('active-tab');
+                }
+            }
+
+            localStorage.setItem('muskan_active_tab', tabNum);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Keyboard Shortcut Handler (1-8 and Left/Right Arrows)
+        document.addEventListener('keydown', function(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+            
+            if (e.key >= '1' && e.key <= '8') {
+                switchTab(parseInt(e.key));
+            } else if (e.key === 'ArrowRight') {
+                switchTab(currentTab === 8 ? 1 : currentTab + 1);
+            } else if (e.key === 'ArrowLeft') {
+                switchTab(currentTab === 1 ? 8 : currentTab - 1);
+            }
+        });
+
+        // TAB 2 SIMULATOR CODE
+        (function() {
+            const tab2Steps = [
+                { phase: "FETCH PHASE", badgeClass: "bg-amber-500 text-slate-950", title: "1. Fetch Step A: Copy PC Address to MAR", desc: "The Control Unit copies Program Counter address (PC=0x00) into Memory Address Register (MAR).", pc: "0x00", mar: "0x00", mdr: "0x0000", ir: "---", acc: 0, cu: "FETCHING" },
+                { phase: "FETCH PHASE", badgeClass: "bg-amber-500 text-slate-950", title: "2. Fetch Step B: Read Memory into MDR & Increment PC", desc: "RAM reads address 0x00 ('LOAD 5') into MDR. PC increments to 0x01.", pc: "0x01", mar: "0x00", mdr: "LOAD 5", ir: "---", acc: 0, cu: "FETCHING" },
+                { phase: "DECODE PHASE", badgeClass: "bg-purple-500 text-white", title: "3. Decode Step: Transfer Opcode to IR", desc: "Instruction in MDR ('LOAD 5') is transferred to Instruction Register (IR). Control Unit decodes 'LOAD'.", pc: "0x01", mar: "0x00", mdr: "LOAD 5", ir: "LOAD 5", acc: 0, cu: "DECODING" },
+                { phase: "EXECUTE PHASE", badgeClass: "bg-emerald-500 text-slate-950", title: "4. Execute Step: Fetch Data at Address 5 into ACC", desc: "Control Unit fetches operand at RAM address 5 (Value=42) and loads it into Accumulator (ACC=42).", pc: "0x01", mar: "0x05", mdr: "42", ir: "LOAD 5", acc: 42, cu: "EXECUTING" }
+            ];
+
+            let tab2CurrentIdx = 0;
+            let tab2Timer = null;
+
+            window.tab2StepCycle = function() {
+                tab2CurrentIdx = (tab2CurrentIdx + 1) % tab2Steps.length;
+                tab2UpdateUI();
+            };
+
+            window.tab2ResetCycle = function() {
+                tab2CurrentIdx = 0;
+                if (tab2Timer) clearInterval(tab2Timer);
+                document.getElementById("tab2-btn-auto").innerText = "Auto-Play ⟳";
+                tab2UpdateUI();
+            };
+
+            window.tab2ToggleAuto = function() {
+                const btn = document.getElementById("tab2-btn-auto");
+                if (tab2Timer) {
+                    clearInterval(tab2Timer);
+                    tab2Timer = null;
+                    btn.innerText = "Auto-Play ⟳";
+                } else {
+                    btn.innerText = "Pause ⏸";
+                    tab2Timer = setInterval(tab2StepCycle, 2000);
+                }
+            };
+
+            function tab2UpdateUI() {
+                const s = tab2Steps[tab2CurrentIdx];
+                const badge = document.getElementById("tab2-phase-badge");
+                badge.innerText = s.phase;
+                badge.className = `px-3 py-1 rounded-full font-black text-xs uppercase tracking-wider ${s.badgeClass}`;
+
+                document.getElementById("tab2-phase-text").innerText = s.title;
+                document.getElementById("tab2-step-title").innerText = s.title;
+                document.getElementById("tab2-step-desc").innerText = s.desc;
+                document.getElementById("tab2-pc-val").innerText = s.pc;
+
+                document.getElementById("tab2-reg-pc").innerText = s.pc;
+                document.getElementById("tab2-reg-mar").innerText = s.mar;
+                document.getElementById("tab2-reg-mdr").innerText = s.mdr;
+                document.getElementById("tab2-reg-ir").innerText = s.ir;
+                document.getElementById("tab2-reg-acc").innerText = s.acc;
+                document.getElementById("tab2-reg-cu").innerText = s.cu;
+
+                // Render RAM
+                const ramData = [
+                    { addr: "0x00", val: "LOAD 5", desc: "Opcode Instruction" },
+                    { addr: "0x01", val: "ADD 6", desc: "Next Instruction" },
+                    { addr: "0x05", val: "42", desc: "Data Operand" },
+                    { addr: "0x06", val: "18", desc: "Data Operand" }
+                ];
+
+                let html = "";
+                ramData.forEach(r => {
+                    const active = (r.addr === s.mar) ? "bg-amber-950/80 border-amber-400 text-white font-bold" : "bg-slate-950 border-slate-800 text-slate-400";
+                    html += `<div class="p-2 rounded border flex justify-between items-center ${active}">
+                        <span>${r.addr} : <strong class="text-white">${r.val}</strong></span>
+                        <span class="text-[10px] text-slate-500">${r.desc}</span>
+                    </div>`;
+                });
+                document.getElementById("tab2-ram-list").innerHTML = html;
+            }
+
+            tab2UpdateUI();
+        })();
+
+        // Restore saved tab on page load
+        window.onload = function() {
+            const savedTab = localStorage.getItem('muskan_active_tab');
+            if (savedTab) {
+                switchTab(parseInt(savedTab));
+            }
+        };
+    </script>
+</body>
+</html>
